@@ -1323,6 +1323,68 @@ function AppContent() {
 
             </section>
 
+            {/* The Founder's Journey Section */}
+            <section id="founder-journey" className="bg-slate-50 dark:bg-slate-900/40 p-8 sm:p-10 rounded-3xl border border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+              <div className="md:col-span-2 space-y-4">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 block">
+                  FOUNDING PHILOSOPHY
+                </span>
+                <h3 className="text-xl font-extrabold text-slate-850 dark:text-white">
+                  The Visionary Journey of Faisal Abbas
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                  JB Blogging was established under the leadership of Faisal Abbas to bridge the widening gap between high-level engineering methodologies and simple, accessible reading lists. In a world saturated with ephemeral posts and commercialized clicks, Faisal aimed to design a clean, ad-free haven for structured, raw knowledge dissemination.
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                  What started as an experimental repository of code designs has transformed into an active ecosystem of builders, researchers, and professional creators. Under his direction, the platform continues to strictly safeguard its status as a premium independent publisher.
+                </p>
+                <div className="pt-2 flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-black">
+                    FA
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Faisal Abbas, Principal Founder & Chief Architect</span>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+                <h4 className="text-xs font-extrabold uppercase tracking-wide text-slate-850 dark:text-slate-200">
+                  Global Metrics
+                </h4>
+                <div className="space-y-3 divide-y divide-slate-100 dark:divide-slate-850/80">
+                  <div className="pt-1">
+                    <span className="text-[10px] uppercase text-slate-400 font-mono">Verified Channels</span>
+                    <p className="text-lg font-black text-blue-600 dark:text-blue-400">4 Core Arenas</p>
+                  </div>
+                  <div className="pt-3">
+                    <span className="text-[10px] uppercase text-slate-400 font-mono">Content Credence</span>
+                    <p className="text-lg font-black text-indigo-600 dark:text-indigo-400">100% Peer-Vetted</p>
+                  </div>
+                  <div className="pt-3">
+                    <span className="text-[10px] uppercase text-slate-400 font-mono">Reader Community</span>
+                    <p className="text-lg font-black text-emerald-600 dark:text-emerald-450">Exponential Growth</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Engineering Principles & Ethics */}
+            <section id="engineering-principles" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 shadow-sm space-y-3">
+                <span className="text-xl">🛠️</span>
+                <h4 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider">Aesthetic & Code Perfection</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                  Every pixel on JB Blogging is aligned to a perfect typography layout. We favor high-contrast reading elements, modern responsive transitions, Inter sans-serif paired with Space Grotesk interfaces, and absolute lightweight client-side payload caching.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 shadow-sm space-y-3">
+                <span className="text-xl">🤝</span>
+                <h4 className="text-sm font-extrabold text-slate-850 dark:text-white uppercase tracking-wider">Uncompromising Peer Code</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                  We verify our authors strictly based on prior industry execution logs. General comments, critiques, and review structures undergo structured moderation checks to maintain a calm, professional debate ecosystem free of spam.
+                </p>
+              </div>
+            </section>
+
             {/* Interactive Team Members cards */}
             <section className="space-y-6">
               <h2 className="text-base font-extrabold text-slate-800 dark:text-white text-center">Meet the Editorial team</h2>
