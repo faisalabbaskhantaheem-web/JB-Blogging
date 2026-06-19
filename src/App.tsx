@@ -13,7 +13,7 @@ import {
   List, SlidersHorizontal, BookOpen, AlertCircle, Sparkles, Send,
   User as UserIcon, LayoutDashboard, PlusCircle, ShieldAlert, CheckCircle,
   FileText, Activity, Users, Settings, Trash, Folder, Trash2, Ban, ShieldCheck, MailOpen,
-  Database, RefreshCw
+  Database, RefreshCw, Upload
 } from 'lucide-react';
 
 function AppContent() {
@@ -134,6 +134,28 @@ function AppContent() {
     setDashboardSubTab('posts');
     setAuthSuccess('Article successfully compiled and persisted!');
     setTimeout(() => setAuthSuccess(''), 4000);
+  };
+
+  // Handle local image file uploads and convert to schema-compliant base64 data URL
+  const handleLocalImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onUploaded: (dataUrl: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image is too large. Please select an image smaller than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        onUploaded(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // Complete email newsletter subscription form on home
@@ -2014,25 +2036,70 @@ function AppContent() {
                         className="space-y-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase">Avatar Picture URL</label>
-                            <input 
-                              type="text" 
-                              value={currentUser.avatar}
-                              onChange={(e) => updateUserProfile(currentUser.id, { avatar: e.target.value })}
-                              className="px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl text-xs border w-full outline-none" 
-                            />
+                          {/* Avatar Upload */}
+                          <div className="space-y-2 p-4 rounded-xl border bg-slate-50/50 dark:bg-slate-800/40">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Avatar Picture Customizer</label>
+                            <div className="flex items-center gap-3">
+                              <img src={currentUser.avatar} alt="Avatar Preview" className="h-10 w-10 rounded-full object-cover border border-slate-250 shadow-sm" />
+                              <div className="flex-grow">
+                                <label className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all active:scale-95 shadow-sm">
+                                  <Upload className="h-3.5 w-3.5" />
+                                  Upload from Gallery
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => handleLocalImageUpload(e, (dataUrl) => updateUserProfile(currentUser.id, { avatar: dataUrl }))} 
+                                  />
+                                </label>
+                                <span className="text-[9px] text-slate-450 block mt-1">Accepts PNG, JPG, WebP.</span>
+                              </div>
+                            </div>
+                            <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                              <span className="text-[9px] text-slate-400 block mb-1">Or paste direct Web Link instead</span>
+                              <input 
+                                type="text" 
+                                value={currentUser.avatar}
+                                onChange={(e) => updateUserProfile(currentUser.id, { avatar: e.target.value })}
+                                className="px-2.5 py-1.5 bg-white dark:bg-slate-900 rounded-lg text-[10px] border w-full outline-none focus:ring-1 focus:ring-blue-500" 
+                                placeholder="Paste picture URL..."
+                              />
+                            </div>
                           </div>
                           
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase">Profile Cover Banner URL</label>
-                            <input 
-                              type="text" 
-                              value={currentUser.coverImage || ''}
-                              onChange={(e) => updateUserProfile(currentUser.id, { coverImage: e.target.value })}
-                              placeholder="Banner url..."
-                              className="px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl text-xs border w-full outline-none" 
-                            />
+                          {/* Profile Cover Banner Upload */}
+                          <div className="space-y-2 p-4 rounded-xl border bg-slate-50/50 dark:bg-slate-800/40">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Profile Cover Banner Customizer</label>
+                            <div className="flex items-center gap-3">
+                              {currentUser.coverImage ? (
+                                <img src={currentUser.coverImage} alt="Banner Preview" className="h-10 w-16 rounded object-cover border border-slate-250 shadow-sm" />
+                              ) : (
+                                <div className="h-10 w-16 rounded bg-slate-250 dark:bg-slate-700 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[8px] text-slate-400 font-bold">No Cover</div>
+                              )}
+                              <div className="flex-grow">
+                                <label className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all active:scale-95 shadow-sm">
+                                  <Upload className="h-3.5 w-3.5" />
+                                  Upload from Gallery
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => handleLocalImageUpload(e, (dataUrl) => updateUserProfile(currentUser.id, { coverImage: dataUrl }))} 
+                                  />
+                                </label>
+                                <span className="text-[9px] text-slate-450 block mt-1">Accepts landscape banners.</span>
+                              </div>
+                            </div>
+                            <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                              <span className="text-[9px] text-slate-400 block mb-1">Or paste direct Web Link instead</span>
+                              <input 
+                                type="text" 
+                                value={currentUser.coverImage || ''}
+                                onChange={(e) => updateUserProfile(currentUser.id, { coverImage: e.target.value })}
+                                className="px-2.5 py-1.5 bg-white dark:bg-slate-900 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 border w-full outline-none focus:ring-1 focus:ring-blue-500" 
+                                placeholder="Paste banner URL..."
+                              />
+                            </div>
                           </div>
                         </div>
 

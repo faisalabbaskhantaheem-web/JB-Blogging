@@ -3,7 +3,7 @@ import { useBlog } from '../context/BlogContext';
 import { Article, ContentBlock } from '../types';
 import { 
   Plus, Trash2, Eye, EyeOff, Save, Check, Type, Heading1, Heading2, 
-  Quote, Code, Image as ImageIcon, Video, HelpCircle, ArrowUp, ArrowDown 
+  Quote, Code, Image as ImageIcon, Video, HelpCircle, ArrowUp, ArrowDown, Upload 
 } from 'lucide-react';
 
 interface BlogEditorProps {
@@ -35,6 +35,28 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ initialArticle, onClose,
   const [autosaveTime, setAutosaveTime] = useState<string>('');
   const [splitPreview, setSplitPreview] = useState(false);
   const [infoMessage, setInfoMessage] = useState('');
+
+  // Handle local image file uploads and convert to schema-compliant base64 data URL
+  const handleLocalImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onUploaded: (dataUrl: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image is too large. Please select an image smaller than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        onUploaded(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Auto-save logic mimicking server updates
   useEffect(() => {
@@ -233,17 +255,40 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ initialArticle, onClose,
                 </select>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
-                  Cover Image URL
+              <div className="space-y-2">
+                <label className="block text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Cover Image
                 </label>
-                <input
-                  type="text"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-4 py-2.5 rounded-xl border bg-transparent text-xs text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
+                <div className="flex items-center gap-3 bg-slate-50/50 dark:bg-slate-800/10 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                  {coverImage ? (
+                    <img src={coverImage} alt="Cover Preview" className="h-10 w-16 object-cover rounded border border-slate-200 dark:border-slate-800" />
+                  ) : (
+                    <div className="h-10 w-16 rounded bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[8px] text-slate-400 font-bold">No Image</div>
+                  )}
+                  <div className="flex-grow flex flex-col gap-1">
+                    <label className="inline-flex items-center self-start justify-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all active:scale-95 shadow-sm">
+                      <Upload className="h-3 w-3" />
+                      Upload from Gallery
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => handleLocalImageUpload(e, (dataUrl) => setCoverImage(dataUrl))} 
+                      />
+                    </label>
+                    <span className="text-[8px] text-slate-450">PNG, JPG, WebP.</span>
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <span className="text-[9px] text-slate-450 block mb-0.5">Or paste direct Web Link:</span>
+                  <input
+                    type="text"
+                    value={coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full px-3 py-1.5 rounded-lg border bg-transparent text-[10px] text-slate-700 dark:text-slate-350 outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
 
@@ -388,21 +433,62 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ initialArticle, onClose,
                   </div>
                 )}
 
-                {(block.type === 'image' || block.type === 'video') && (
+                {block.type === 'image' && (
+                  <div className="space-y-2 bg-slate-50/50 dark:bg-slate-800/10 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-3">
+                      {block.value ? (
+                        <img src={block.value} alt="Preview" className="h-10 w-16 object-cover rounded border border-slate-200 dark:border-slate-800" />
+                      ) : (
+                        <div className="h-10 w-16 rounded bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[8px] text-slate-400 font-bold">No Image</div>
+                      )}
+                      <div>
+                        <label className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-all active:scale-95 shadow-sm">
+                          <Upload className="h-3 w-3" />
+                          Upload from Gallery
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => handleLocalImageUpload(e, (dataUrl) => updateBlockValue(index, dataUrl))} 
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-slate-450 block mb-1">Or paste direct Web Link:</span>
+                      <input
+                        type="text"
+                        value={block.value}
+                        onChange={(e) => updateBlockValue(index, e.target.value)}
+                        placeholder="Image URL..."
+                        className="w-full bg-white dark:bg-slate-800 border rounded-lg py-1.5 px-3 text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      value={block.extra || ''}
+                      onChange={(e) => updateBlockExtra(index, e.target.value)}
+                      placeholder="Caption text or description..."
+                      className="w-full bg-white dark:bg-slate-800 border rounded-lg py-1.5 px-3 text-[10px] text-slate-400 outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+
+                {block.type === 'video' && (
                   <div className="space-y-2">
                     <input
                       type="text"
                       value={block.value}
                       onChange={(e) => updateBlockValue(index, e.target.value)}
-                      placeholder={block.type === 'image' ? 'Image Unsplash URL...' : 'Video Embed URL (YouTube/Vimeo)...'}
-                      className="w-full bg-white dark:bg-slate-800 border rounded-xl py-2 px-3 text-xs outline-none"
+                      placeholder="Video Embed URL (YouTube/Vimeo)..."
+                      className="w-full bg-white dark:bg-slate-800 border rounded-xl py-2 px-3 text-xs outline-none focus:ring-1 focus:ring-blue-500"
                     />
                     <input
                       type="text"
                       value={block.extra || ''}
                       onChange={(e) => updateBlockExtra(index, e.target.value)}
                       placeholder="Caption text or description..."
-                      className="w-full bg-white dark:bg-slate-800 border rounded-xl py-2 px-3 text-[10px] text-slate-400 outline-none"
+                      className="w-full bg-white dark:bg-slate-800 border rounded-xl py-2 px-3 text-[10px] text-slate-400 outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 )}
